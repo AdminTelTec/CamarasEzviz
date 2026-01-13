@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo EZVIZ - Lista de Precios</title>
+    <!-- Fuente Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #0078d4;
+            /* Azul EZVIZ */
+            --secondary: #2d3436;
+            --accent: #00b894;
+            --danger: #d63031;
+            --warning: #fdcb6e;
+            --light: #f5f6fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #eef2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* CONFIGURACIÓN (NO IMPRIMIBLE) */
+        .config-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            text-align: center;
+            border-left: 5px solid var(--primary);
+        }
+
+        .btn-print {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-print:hover {
+            background-color: #005a9e;
+        }
+
+        /* ENCABEZADO DOCUMENTO */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .brand-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* GRID DE PRODUCTOS */
+        .category-title {
+            background-color: var(--secondary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* TARJETA DE PRODUCTO */
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e1e1e1;
+            break-inside: avoid;
+            /* Evita que se corte en PDF */
+            page-break-inside: avoid;
+            transition: transform 0.2s;
+        }
+
+        .card-header {
+            position: relative;
+            height: 200px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .card-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .card-header img {
+            transform: scale(1.05);
+        }
+
+        /* ETIQUETAS DE STOCK */
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .bg-red {
+            background-color: var(--danger);
+        }
+
+        .bg-green {
+            background-color: var(--accent);
+        }
+
+        .bg-blue {
+            background-color: var(--primary);
+        }
+
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .model-code {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin: 0 0 10px 0;
+            line-height: 1.3;
+        }
+
+        .product-desc {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .price-section {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-label {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .price-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .qr-link {
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #f0f8ff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .qr-link:hover {
+            background: #dbeafe;
+        }
+
+        /* PIE DE PÁGINA */
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #999;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        /* AJUSTES DE IMPRESIÓN (PDF) */
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
+            }
+
+            .config-panel,
+            .no-print {
+                display: none !important;
+            }
+
+            .product-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+
+            .category-title {
+                background-color: #2d3436 !important;
+                -webkit-print-color-adjust: exact;
+                color: white !important;
+            }
+
+            .badge {
+                -webkit-print-color-adjust: exact;
+            }
+
+            .products-grid {
+                display: block;
+            }
+
+            .product-card {
+                width: 45%;
+                display: inline-block;
+                vertical-align: top;
+                margin: 1%;
+                height: 380px;
+                /* Altura fija para alineación */
+            }
+
+            .qr-link {
+                border: 1px solid #ccc;
+            }
+
+            /* Forzar colores de fondo */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Panel de Control (No sale en el PDF) -->
+    <div class="config-panel">
+        <h2>🎛️ Panel de Control</h2>
+        <p>Tasa de Cambio: <strong>Q8.30</strong> | Margen de Ganancia: <strong>42%</strong> | Redondeo:
+            <strong>Activado</strong>
+        </p>
+        <button class="btn-print" onclick="window.print()"><i class="fas fa-file-pdf"></i> Imprimir Catálogo
+            PDF</button>
+    </div>
+
+    <div id="catalog-content">
+        <header>
+            <div style="margin-bottom: 20px;">
+                <img src="Teltec.webp" alt="Teltec Logo" style="max-height: 80px; width: auto;">
+            </div>
+            <h1 class="brand-title">Catálogo de Soluciones EZVIZ</h1>
+            <div class="brand-subtitle">Seguridad Inteligente & Domótica | Precios Oficiales en Quetzales</div>
+            <div style="margin-top: 15px;">
+                <a href="https://www.grupoteltec.com" target="_blank"
+                    style="color: var(--primary); text-decoration: none; font-weight: bold; font-size: 1.1rem;">
+                    <i class="fas fa-globe"></i> www.grupoteltec.com
+                </a>
+            </div>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Válido hasta agotar existencias</p>
+        </header>
+
+        <!-- El contenido se genera con Javascript abajo -->
+        <div id="dynamic-container"></div>
+
+        <footer>
+            <p>Precios sujetos a cambio sin previo aviso. Imágenes con fines ilustrativos.</p>
+            <p>© 2026 Distribuidor Autorizado EZVIZ</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- CONSTANTES FINANCIERAS ---
+        const TASA_CAMBIO = 8.3;
+        const MARGEN = 1.42; // 42% arriba
+
+        // --- BASE DE DATOS DE PRODUCTOS ---
+        // He organizado tus datos aquí. Si quieres cambiar una imagen, cambia el link en "image".
+        // Usamos placeholders con el color de EZVIZ (2980b9) para que se vea corporativo.
+        const products = [
+            // CÁMARAS INALÁMBRICAS
+            {
+                mpn: "CS-CB8C",
+                name: "Kit CB8 2K+ (Batería + Panel Solar)",
+                desc: "100% Inalámbrica. 360° Pan/Tilt. Incluye panel solar para carga continua. Detección de personas.",
+                category: "🔋 Cámaras Inalámbricas & Solar",
+                stock: 11,
+                costUSD: 117.39,
+                link: "https://www.ezviz.com/la/product/cb8/41159",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=Kit+CB8+Solar"
+            },
+            {
+                mpn: "SOLARPANEL-E",
+                name: "Panel Solar de Carga (Accesorio)",
+                desc: "Accesorio extra para cámaras de batería (Modelos EB8/CB8). Conector Tipo C / MicroUSB.",
+                category: "🔋 Cámaras Inalámbricas & Solar",
+                stock: 18,
+                costUSD: 24.92,
+                link: "https://www.ezviz.com/es/product/panel-solar-de-carga/33737",
+                image: "https://placehold.co/600x400/27ae60/ffffff?text=Panel+Solar+EZVIZ"
+            },
+
+            // CÁMARAS INTERIOR
+            {
+                mpn: "CS-H1C",
+                name: "H1c 1080p Base Magnética",
+                desc: "Compacta y económica. Audio bidireccional. Visión nocturna. Ideal mascotas.",
+                category: "🏠 Cámaras de Interior",
+                stock: 82,
+                costUSD: 18.41,
+                link: "https://www.ezviz.com/la/product/h1c/50221",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H1c+Mini"
+            },
+            {
+                mpn: "CS-H6C-2MP",
+                name: "H6c Robotizada 360° (2MP)",
+                desc: "Rastreo inteligente. La cámara gira sola al detectar movimiento. Modo privacidad.",
+                category: "🏠 Cámaras de Interior",
+                stock: 93,
+                costUSD: 25.83,
+                link: "https://www.ezviz.com/la/product/h6c/44055",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H6c+2MP+360"
+            },
+            {
+                mpn: "CS-H6C-4MP",
+                name: "H6c Robotizada 360° (4MP 2K+)",
+                desc: "Mayor resolución para detalles finos. Rastreo inteligente y cobertura total.",
+                category: "🏠 Cámaras de Interior",
+                stock: 60,
+                costUSD: 33.20,
+                link: "https://www.ezviz.com/la/product/h6c+2k%E2%81%BA/44053",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H6c+4MP+2K%2B"
+            },
+            {
+                mpn: "CS-E4P",
+                name: "E4p Fisheye Panorámica 360°",
+                desc: "Una sola cámara ve toda la habitación (Ojo de pez). Audio premium.",
+                category: "🏠 Cámaras de Interior",
+                stock: 20,
+                costUSD: 95.92,
+                link: "https://www.ezviz.com/arg/product/e4p/191667",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=Fisheye+360+Panoramica"
+            },
+
+            // CÁMARAS EXTERIOR
+            {
+                mpn: "CS-H3C-COLOR",
+                name: "H3c Color 2MP (Visión Nocturna)",
+                desc: "Bullet fija IP67. Ve a color en la oscuridad total. Detección humana IA.",
+                category: "🌤️ Cámaras de Exterior (IP67)",
+                stock: 19,
+                costUSD: 35.43,
+                link: "https://www.ezviz.com/la/product/h3c+color/46915",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H3c+Color+Night"
+            },
+            {
+                mpn: "CS-H3-3K",
+                name: "H3 3K (5MP) Alta Definición",
+                desc: "Carcasa metálica robusta. Sirena y luz estroboscópica defensiva. IA avanzada.",
+                category: "🌤️ Cámaras de Exterior (IP67)",
+                stock: 14,
+                costUSD: 51.26,
+                link: "https://www.ezviz.com/la/product/h3-3k/42441",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H3+3K+Pro+Metal"
+            },
+            {
+                mpn: "CS-H8C",
+                name: "H8c 360° Exterior (5MP)",
+                desc: "Robotizada para exterior. Cubre puntos ciegos. Resistente a lluvia.",
+                category: "🌤️ Cámaras de Exterior (IP67)",
+                stock: 6,
+                costUSD: 51.64,
+                link: "https://www.ezviz.com/la/product/h8c/44445",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H8c+PTZ+Exterior"
+            },
+
+            // SERIE PREMIUM (DOBLE LENTE)
+            {
+                mpn: "CS-H7C-DUAL",
+                name: "H7c Dual Lens (Interior)",
+                desc: "Doble lente: Uno fijo + Uno móvil. Zoom híbrido. Lo más avanzado para interior.",
+                category: "💎 Serie Premium: Lente Dual y 4K",
+                stock: 17,
+                costUSD: 52.40,
+                link: "https://www.ezviz.com/la/product/h7c+dual+2k%E2%81%BA/60263",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H7c+Dual+Lens"
+            },
+            {
+                mpn: "CS-H80X-4K",
+                name: "H80x Dual 4K (8MP)",
+                desc: "La mejor calidad de imagen. Doble lente con seguimiento automático y Zoom 8x.",
+                category: "💎 Serie Premium: Lente Dual y 4K",
+                stock: 38,
+                costUSD: 81.16,
+                link: "https://www.ezviz.com/la/product/h80x-dual/67487",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H80x+4K+Dual"
+            },
+            {
+                mpn: "CS-H9C-DUAL",
+                name: "H9c Dual Lens 3K",
+                desc: "Exterior. Dos vistas en una pantalla. Seguimiento inteligente superior.",
+                category: "💎 Serie Premium: Lente Dual y 4K",
+                stock: 13,
+                costUSD: 75.25,
+                link: "https://www.ezviz.com/la/product/h9c+dual+3k/60259",
+                image: "https://placehold.co/600x400/0078d4/ffffff?text=H9c+Dual+PTZ"
+            },
+            {
+                mpn: "CS-H80F",
+                name: "H80f Triple-Lens (Exclusivo)",
+                desc: "¡Triple lente! Máxima cobertura sin puntos ciegos. Zoom óptico híbrido.",
+                category: "💎 Serie Premium: Lente Dual y 4K",
+                stock: 6,
+                costUSD: 88.54,
+                link: "https://www.ezviz.com/es/product/h80f-multi-2k%E2%81%BA/75737",
+                image: "https://placehold.co/600x400/8e44ad/ffffff?text=TRIPLE+LENTE+H80f"
+            },
+
+            // CONTROL DE ACCESO & NVR
+            {
+                mpn: "CS-DL03",
+                name: "Cerradura Inteligente DL03",
+                desc: "Se pega sobre tu cerradura actual. Abre con App o código. Instalación fácil.",
+                category: "🔐 Control de Acceso y Grabación",
+                stock: 2,
+                costUSD: 67.88,
+                link: "https://www.ezviz.com/mx/product/dl03/61869",
+                image: "https://placehold.co/600x400/2c3e50/ffffff?text=Cerradura+DL03"
+            },
+            {
+                mpn: "CS-L2S",
+                name: "Cerradura L2S (Huella)",
+                desc: "Apertura por Huella Digital, Tarjeta, Código o Llave. Diseño elegante.",
+                category: "🔐 Control de Acceso y Grabación",
+                stock: 2,
+                costUSD: 118.06,
+                link: "https://www.ezviz.com/la/product/L2S/44049",
+                image: "https://placehold.co/600x400/2c3e50/ffffff?text=Cerradura+Huella+L2S"
+            },
+            {
+                mpn: "CS-X5S",
+                name: "NVR WiFi X5S (8 Canales)",
+                desc: "Grabador central para hasta 8 cámaras WiFi. Soporta disco duro hasta 8TB.",
+                category: "🔐 Control de Acceso y Grabación",
+                stock: 78,
+                costUSD: 50.51,
+                link: "https://www.ezviz.com/la/product/x5s/1437",
+                image: "https://placehold.co/600x400/2c3e50/ffffff?text=NVR+WIFI+X5S"
+            }
+        ];
+
+        function calculatePrice(usd) {
+            let quetzales = usd * TASA_CAMBIO;
+            let finalPrice = quetzales * MARGEN;
+            return Math.round(finalPrice);
+        }
+
+        function getStockBadge(stock, isNew) {
+            if (stock <= 5) return '<span class="badge bg-red">¡Últimas ' + stock + '!</span>';
+            if (isNew) return '<span class="badge bg-blue">Nuevo Ingreso</span>';
+            if (stock > 20) return '<span class="badge bg-green">Stock Disponible</span>';
+            return '<span class="badge bg-blue">Disponible</span>';
+        }
+
+        function renderCatalog() {
+            const container = document.getElementById('dynamic-container');
+
+            // Agrupar por categoría
+            const grouped = products.reduce((acc, product) => {
+                (acc[product.category] = acc[product.category] || []).push(product);
+                return acc;
+            }, {});
+
+            for (const [category, items] of Object.entries(grouped)) {
+                // Título de categoría
+                const catTitle = document.createElement('div');
+                catTitle.className = 'category-title';
+
+                // Icono según categoría
+                let icon = 'fa-video';
+                if (category.includes('Inalámbricas')) icon = 'fa-battery-full';
+                if (category.includes('Interior')) icon = 'fa-home';
+                if (category.includes('Exterior')) icon = 'fa-cloud-sun';
+                if (category.includes('Premium')) icon = 'fa-gem';
+                if (category.includes('Acceso')) icon = 'fa-lock';
+
+                catTitle.innerHTML = `<i class="fas ${icon}"></i> ${category}`;
+                container.appendChild(catTitle);
+
+                // Grid de productos
+                const grid = document.createElement('div');
+                grid.className = 'products-grid';
+
+                items.forEach(prod => {
+                    const finalPrice = calculatePrice(prod.costUSD);
+                    const isNew = prod.mpn.includes("H9") || prod.mpn.includes("H80"); // Lógica simple para 'nuevo'
+
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <img src="${prod.image}" alt="${prod.name}" onerror="this.src='https://placehold.co/600x400/eeeeee/333333?text=Sin+Imagen'">
+                            ${getStockBadge(prod.stock, isNew)}
+                        </div>
+                        <div class="card-body">
+                            <div class="model-code">MPN: ${prod.mpn}</div>
+                            <h3 class="product-name">${prod.name}</h3>
+                            <p class="product-desc">${prod.desc}</p>
+                            
+                            <div class="price-section">
+                                <a href="${prod.link}" target="_blank" class="qr-link">
+                                    <i class="fas fa-external-link-alt"></i> Ver Ficha Técnica
+                                </a>
+                                <div>
+                                    <div class="price-label">Precio Venta</div>
+                                    <div class="price-value">Q${finalPrice.toLocaleString('es-GT')}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                container.appendChild(grid);
+            }
+        }
+
+        // Ejecutar al cargar
+        renderCatalog();
+
+    </script>
+</body>
+
+</html>
